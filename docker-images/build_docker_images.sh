@@ -2,7 +2,7 @@
 
 set -ux
 DIR="."
-function GetPathToCurrentlyExecutingScript () {
+GetPathToCurrentlyExecutingScript () {
 	# Absolute path of this script, e.g. /opt/corda/node/foo.sh
 	ABS_PATH=$(readlink -f "$0")
 	if [ "$?" -ne "0" ]; then
@@ -39,7 +39,7 @@ function GetPathToCurrentlyExecutingScript () {
 GetPathToCurrentlyExecutingScript
 set -eux
 
-source $DIR/docker_config.sh
+. $DIR/docker_config.sh
 
 # Make sure Docker is ready
 docker ps &>/dev/null
@@ -58,6 +58,14 @@ if [ "${1-}" == "no-cache" ]
 then
 	NO_CACHE=--no-cache
 fi 
+
+if [ ! -f "$DIR/bin/$CORDA_VERSION.jar" -o  ! -f "$DIR/bin/corda-tools-health-survey-$HEALTH_CHECK_VERSION.jar" -o  ! -f "$DIR/bin/$CORDA_FIREWALL_VERSION.jar" ]; then
+	echo "Missing binaries, check that you have the correct files with the correct names in the following folder $DIR/bin"
+	echo "$DIR/bin/$CORDA_VERSION.jar"
+	echo "$DIR/bin/$CORDA_FIREWALL_VERSION.jar"
+	echo "$DIR/bin/corda-tools-health-survey-$HEALTH_CHECK_VERSION.jar"
+	exit 1
+fi
 
 cp $DIR/bin/$CORDA_VERSION.jar $DIR/$CORDA_IMAGE_PATH/corda.jar
 cp $DIR/bin/corda-tools-health-survey-$HEALTH_CHECK_VERSION.jar $DIR/$CORDA_IMAGE_PATH/corda-tools-health-survey.jar

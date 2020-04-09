@@ -2,7 +2,7 @@
 
 set -ux
 DIR="."
-function GetPathToCurrentlyExecutingScript () {
+GetPathToCurrentlyExecutingScript () {
 	# Absolute path of this script, e.g. /opt/corda/node/foo.sh
 	ABS_PATH=$(readlink -f "$0")
 	if [ "$?" -ne "0" ]; then
@@ -39,12 +39,11 @@ function GetPathToCurrentlyExecutingScript () {
 GetPathToCurrentlyExecutingScript
 set -eux
 
-TEMPLATE_NAMESPACE="cordatest"
 OUTPUT_DIR=$DIR/output
 SCRIPT=$OUTPUT_DIR/corda/templates/initial_registration.sh
 NODE_CONF=$OUTPUT_DIR/corda/templates/node.conf
 
-helm template $DIR -f $DIR/../values.yaml --name $TEMPLATE_NAMESPACE --namespace $TEMPLATE_NAMESPACE --output-dir $OUTPUT_DIR --set-file node_conf=$DIR/../files/node.conf
+helm template $DIR -f $DIR/../values.yaml --output-dir $OUTPUT_DIR --set-file node_conf=$DIR/../files/node.conf
 mv $OUTPUT_DIR/corda/templates/initial_registration.sh.yml $SCRIPT
 mv $OUTPUT_DIR/corda/templates/node.conf.yml $NODE_CONF
 
