@@ -1,5 +1,9 @@
 #!/bin/bash
 
+RED='\033[0;31m' # Error color
+YELLOW='\033[0;33m' # Warning color
+NC='\033[0m' # No Color
+
 set -u
 DIR="."
 GetPathToCurrentlyExecutingScript () {
@@ -45,12 +49,13 @@ set -eu
 PushDockerImages () {
 	echo "====== Pushing Docker images next ... ====== "
 	if [ "$DOCKER_REGISTRY" = "" ]; then
+		echo -e "${RED}ERROR${NC}"
 		echo "You must specify a valid container registry in the values.yaml file"
 		exit 1
 	fi
 
 	echo "Logging in to Docker registry..."
-	$DOCKER_CMD login $DOCKER_REGISTRY
+	$DOCKER_CMD login $DOCKER_REGISTRY --username $DOCKER_USER --password $DOCKER_PASSWORD
 
 	echo "Tagging Docker images..."
 	$DOCKER_CMD tag ${CORDA_IMAGE_PATH}:$CORDA_DOCKER_IMAGE_VERSION $DOCKER_REGISTRY/${CORDA_IMAGE_PATH}_$VERSION:$CORDA_DOCKER_IMAGE_VERSION
